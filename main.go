@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/chunyukuo88/workoutsV2/internal/app"
+	"github.com/chunyukuo88/workoutsV2/internal/routes"
 )
 
 func main() {
@@ -21,10 +22,11 @@ func main() {
 
 	app.Logger.Println("The app is running, yay.")
 
-	http.HandleFunc("/health", HealthCheck)
+	r := routes.SetupRoutes(app)
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
+		Handler:      r,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
