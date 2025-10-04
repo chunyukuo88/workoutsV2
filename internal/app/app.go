@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/chunyukuo88/workoutsV2/internal/api"
+	"github.com/chunyukuo88/workoutsV2/migrations"
 	"github.com/chunyukuo88/workoutsV2/store"
 )
 
@@ -22,6 +23,7 @@ func NewApplication() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = store.MigrateFS(pgDB, migrations.FS)
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
 	workoutHandler := api.NewWorkoutHandler()
