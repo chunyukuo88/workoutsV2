@@ -6,7 +6,6 @@ import (
 	"io/fs"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.com/pressly/goose"
 	"github.com/pressly/goose/v3"
 )
 
