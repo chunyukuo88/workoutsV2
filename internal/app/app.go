@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/chunyukuo88/workoutsV2/internal/api"
-	"github.com/chunyukuo88/workoutsV2/internal/migrations"
-	"github.com/chunyukuo88/workoutsV2/store"
+	"github.com/chunyukuo88/workoutsV2/internal/store"
+	"github.com/chunyukuo88/workoutsV2/migrations"
 )
 
 type Application struct {
