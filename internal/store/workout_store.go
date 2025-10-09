@@ -74,3 +74,7 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 
 	return workout, nil
 }
+
+func (pg *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
+	return &Workout{}, nil
+}
