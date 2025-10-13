@@ -155,7 +155,7 @@ func (pg *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
 		return sql.ErrNoRows
 	}
 
-	_, err = tx.Exec(`DELEE FROM workout_entries WHERE workout_id = $1`, workout.ID)
+	_, err = tx.Exec(`DELETE FROM workout_entries WHERE workout_id = $1`, workout.ID)
 	if err != nil {
 		return err
 	}

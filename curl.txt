@@ -31,7 +31,7 @@ curl -X POST http://localhost:8080/workouts \
 curl -X PUT http://localhost:8080/workouts/1 \
      -H "Content-Type: application/json" \
      -d '{
-           "title": "Updated Full Body Strength Training",
+           "title": "Lifting giant tires",
            "description": "A more intense strength training session",
            "duration_minutes": 75,
            "calories_burned": 600,
