@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/chunyukuo88/workoutsV2/internal/api"
-	"github.com/chunyukuo88/workoutsV2/internal/migrations"
-	"github.com/chunyukuo88/workoutsV2/store"
+	"github.com/chunyukuo88/workoutsV2/internal/store"
+	"github.com/chunyukuo88/workoutsV2/migrations"
 )
 
 type Application struct {
@@ -29,7 +29,10 @@ func NewApplication() (*Application, error) {
 	}
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
-	workoutHandler := api.NewWorkoutHandler()
+	workoutStore := store.NewPostgresWorkoutStore(pgDB)
+
+	workoutHandler := api.NewWorkoutHandler(workoutStore)
+
 	app := &Application{
 		Logger:         logger,
 		WorkoutHandler: workoutHandler,
