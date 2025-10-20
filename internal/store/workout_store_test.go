@@ -12,7 +12,7 @@ import (
 func setupTestDB(t *testing.T) *sql.DB {
 	db, err := sql.Open("pgx", "host=localhost user=postgres password=postgres dbname=postgres port=5433")
 	if err != nil {
-		t.Fatal("opening test db: %v", err)
+		t.Fatalf("opening test db: %v", err)
 	}
 
 	err = Migrate(db, "../../migrations/")
@@ -109,7 +109,7 @@ func TestCreateWorkout(t *testing.T) {
 
 			assert.Equal(t, retrieved.ID, createdWorkout.ID)
 			assert.Equal(t, len(tt.workout.Entries), len(createdWorkout.Entries))
-			for i, entry := range retrieved.Entries {
+			for i, _ := range retrieved.Entries {
 				assert.Equal(t, tt.workout.Entries[i].ExerciseName, retrieved.Entries[i].ExerciseName)
 				assert.Equal(t, tt.workout.Entries[i].Sets, retrieved.Entries[i].Sets)
 				assert.Equal(t, tt.workout.Entries[i].OrderIndex, retrieved.Entries[i].OrderIndex)
