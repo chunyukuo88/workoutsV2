@@ -31,12 +31,12 @@ func NewPostgresUserStore(db *sql.DB) *PostgresUserStore {
 }
 
 type UserStore interface {
-	CreateUser(*User) error
-	GetUserByID(username string) (*User, error)
+	CreateUser(*User) (*User, error)
+	GetUserByID(id int) (*User, error)
 	UpdateUser(*User) error
 }
 
-func (s *PostgresUserStore) CreateUser(user *User) error {
+func (s *PostgresUserStore) CreateUser(user *User) (*User, error) {
 	query := `
 	INSERT INTO users (username, email, password_hash, bio)
 	VALUES ($1, $2, $3, $4)
@@ -45,9 +45,9 @@ func (s *PostgresUserStore) CreateUser(user *User) error {
 
 	err := s.db.QueryRow(query, user.Username, user.Email, user.PasswordHash.hash, user.Bio).Scan(&user.ID, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return user, nil
 }
 
 // Get user password and update user password should probably have their own separate methods.

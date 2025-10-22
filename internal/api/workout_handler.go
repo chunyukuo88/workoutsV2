@@ -35,7 +35,7 @@ func (wh WorkoutHandler) HandleGetByWorkoutID(w http.ResponseWriter, r *http.Req
 
 	workout, err := wh.workoutStore.GetWorkoutByID(workoutID)
 	if err != nil {
-		wh.logger.Printf("ERROR: failed to read ID param: %v", err)
+		wh.logger.Printf("ERROR: failed to read get workout: %v", err)
 		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "internal server error"})
 		return
 	}

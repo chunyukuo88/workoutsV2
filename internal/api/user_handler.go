@@ -1,0 +1,74 @@
+package api
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/chunyukuo88/workoutsV2/internal/store"
+	"github.com/chunyukuo88/workoutsV2/internal/utils"
+)
+
+type UserHandler struct {
+	userStore store.UserStore
+	logger    *log.Logger
+}
+
+type registerUserRequest struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Bio      string `json:"bio"`
+}
+
+func NewUserHandler(userStore store.UserStore, logger *log.Logger) *UserHandler {
+	return &UserHandler{
+		userStore,
+		logger,
+	}
+}
+
+func (uh UserHandler) HandleGetUserByID(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.ReadIDParam(r)
+	if err != nil {
+		uh.logger.Printf("ERROR: failed to read ID param: %v", err)
+		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "invalid workout ID"})
+		return
+	}
+
+	user, err := uh.userStore.GetUserByID(int(userID))
+	if err != nil {
+		uh.logger.Printf("ERROR: failed to get user: %v", err)
+		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "internal service error"})
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"user": user})
+}
+
+func (uh UserHandler) HandleRegisterUser(w http.ResponseWriter, r *http.Request) {
+	var req registerUserRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		uh.logger.Printf("ERROR: decoding create user: %v", err)
+		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "invalid request"})
+		return
+	}
+
+	user := &store.User{
+		Username: req.Username,
+		Email:    req.Email,
+	}
+	if req.Bio != "" {
+		user.Bio = req.Bio
+	}
+
+	createdUser, err := uh.userStore.CreateUser(user)
+	if err != nil {
+		uh.logger.Printf("ERROR: createUser: %v", err)
+		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "failed to create user"})
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"user": createdUser})
+}
