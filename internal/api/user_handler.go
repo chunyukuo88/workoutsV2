@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/chunyukuo88/workoutsV2/internal/store"
 	"github.com/chunyukuo88/workoutsV2/internal/utils"
@@ -26,6 +27,22 @@ func (u *UserHandler) validateRegisterRequest(req *registerUserRequest) error {
 	if req.Username == "" {
 		return errors.New("username is required")
 	}
+	if len(req.Username) > 50 {
+		return errors.New("username is longer than 50 characters")
+	}
+	if req.Email == "" {
+		return errors.New("email is required")
+	}
+
+	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if !emailRegex.MatchString(req.Email) {
+		return errors.New("invalid email format")
+	}
+
+	if req.Password == "" {
+		return errors.New("password is required")
+	}
+
 	return nil
 }
 
