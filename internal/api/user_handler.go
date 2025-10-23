@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
@@ -19,6 +20,13 @@ type registerUserRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Bio      string `json:"bio"`
+}
+
+func (u *UserHandler) validateRegisterRequest(req *registerUserRequest) error {
+	if req.Username == "" {
+		return errors.New("username is required")
+	}
+	return nil
 }
 
 func NewUserHandler(userStore store.UserStore, logger *log.Logger) *UserHandler {
