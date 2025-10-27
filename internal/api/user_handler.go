@@ -95,12 +95,12 @@ func (uh UserHandler) HandleRegisterUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	createdUser, err := uh.userStore.CreateUser(user)
+	err = uh.userStore.CreateUser(user)
 	if err != nil {
 		uh.logger.Printf("ERROR: createUser: %v", err)
 		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "failed to create user"})
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"user": createdUser})
+	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"user": user})
 }
