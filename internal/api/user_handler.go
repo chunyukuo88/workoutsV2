@@ -102,5 +102,5 @@ func (uh UserHandler) HandleRegisterUser(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusCreated, utils.Envelope{"user": createdUser})
+	utils.WriteJSON(w, http.StatusOK, utils.Envelope{"user": createdUser})
 }
