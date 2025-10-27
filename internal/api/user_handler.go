@@ -88,6 +88,13 @@ func (uh UserHandler) HandleRegisterUser(w http.ResponseWriter, r *http.Request)
 		user.Bio = req.Bio
 	}
 
+	err = user.PasswordHash.Set(req.Password)
+	if err != nil {
+		uh.logger.Printf("ERROR: hashing passwords %v:", err)
+		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "internal server error"})
+		return
+	}
+
 	createdUser, err := uh.userStore.CreateUser(user)
 	if err != nil {
 		uh.logger.Printf("ERROR: createUser: %v", err)
