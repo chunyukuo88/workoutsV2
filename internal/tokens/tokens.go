@@ -22,6 +22,7 @@ type Token struct {
 func GenerateToken(userID int, ttl time.Duration, scope string) (*Token, error) {
 	token := &Token{
 		Plaintext: "",
+		UserID:    userID,
 		Expiry:    time.Now().Add(ttl),
 		Scope:     scope,
 	}
