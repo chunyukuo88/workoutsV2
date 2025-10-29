@@ -14,7 +14,7 @@ type password struct {
 }
 
 func (p *password) Set(plainTextPassword string) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(plainTextPassword), 20)
+	hash, err := bcrypt.GenerateFromPassword([]byte(plainTextPassword), 12)
 	if err != nil {
 		return err
 	}
