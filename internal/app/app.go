@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/chunyukuo88/workoutsV2/internal/api"
+	"github.com/chunyukuo88/workoutsV2/internal/middleware"
 	"github.com/chunyukuo88/workoutsV2/internal/store"
 	"github.com/chunyukuo88/workoutsV2/migrations"
 )
@@ -17,6 +18,7 @@ type Application struct {
 	WorkoutHandler *api.WorkoutHandler
 	UserHandler    *api.UserHandler
 	TokenHandler   *api.TokenHandler
+	Middleware     middleware.UserMiddleware
 	DB             *sql.DB
 }
 
@@ -38,12 +40,14 @@ func NewApplication() (*Application, error) {
 	userHandler := api.NewUserHandler(userStore, logger)
 	workoutHandler := api.NewWorkoutHandler(workoutStore, logger)
 	tokenHandler := api.NewTokenHandler(tokenStore, userStore, logger)
+	middlewareHandler := middleware.UserMiddleware{UserStore: userStore}
 
 	app := &Application{
 		Logger:         logger,
 		WorkoutHandler: workoutHandler,
 		UserHandler:    userHandler,
 		TokenHandler:   tokenHandler,
+		Middleware:     middlewareHandler,
 		DB:             pgDB,
 	}
 
