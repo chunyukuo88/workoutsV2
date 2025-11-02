@@ -3,11 +3,13 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 
 	"strconv"
 
+	"github.com/chunyukuo88/workoutsV2/internal/middleware"
 	"github.com/chunyukuo88/workoutsV2/internal/store"
 	"github.com/chunyukuo88/workoutsV2/internal/utils"
 	"github.com/go-chi/chi/v5"
@@ -52,6 +54,12 @@ func (wh WorkoutHandler) HandleCreateWorkout(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	currentUser := middleware.GetUser(r)
+	if currentUser == nil || currentUser == store.AnonymousUser {
+		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "you must be logged in to do this"})
+		return
+	}
+
 	createdWorkout, err := wh.workoutStore.CreateWorkout(&workout)
 	if err != nil {
 		wh.logger.Printf("ERROR: createWorkout: %v", err)
@@ -70,6 +78,12 @@ func (wh WorkoutHandler) HandleUpdateWorkoutByID(w http.ResponseWriter, r *http.
 		return
 	}
 
+	currentUser := middleware.GetUser(r)
+	if currentUser == nil || currentUser == store.AnonymousUser {
+		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "you must be logged in to do this"})
+		return
+	}
+
 	existingWorkout, err := wh.workoutStore.GetWorkoutByID(workoutID)
 	if err != nil {
 		wh.logger.Printf("ERROR: getWorkoutByID: %v", err)
@@ -78,6 +92,17 @@ func (wh WorkoutHandler) HandleUpdateWorkoutByID(w http.ResponseWriter, r *http.
 	}
 	if existingWorkout == nil {
 		http.NotFound(w, r)
+		return
+	}
+	workoutOwner, err := wh.workoutStore.GetWorkoutOwner(workoutID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "you must be logged into to do this"})
+			return
+		}
+	}
+	if workoutOwner != currentUser.ID {
+		utils.WriteJSON(w, http.StatusForbidden, utils.Envelope{"error": "you are not authorized to update this workout"})
 		return
 	}
 
@@ -122,6 +147,12 @@ func (wh WorkoutHandler) HandleUpdateWorkoutByID(w http.ResponseWriter, r *http.
 }
 
 func (wh WorkoutHandler) HandleDeleteWorkout(w http.ResponseWriter, r *http.Request) {
+	currentUser := middleware.GetUser(r)
+	if currentUser == nil || currentUser == store.AnonymousUser {
+		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "you must be logged in to do this"})
+		return
+	}
+
 	paramsWorkoutID := chi.URLParam(r, "id")
 	if paramsWorkoutID == "" {
 		http.NotFound(w, r)
