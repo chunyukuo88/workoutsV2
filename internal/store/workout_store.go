@@ -34,6 +34,7 @@ func NewPostgresWorkoutStore(db *sql.DB) *PostgresWorkoutStore {
 type WorkoutStore interface {
 	CreateWorkout(*Workout) (*Workout, error)
 	GetWorkoutByID(id int64) (*Workout, error)
+	GetWorkoutOwner(id int64) (int, error)
 	UpdateWorkout(*Workout) error
 	DeleteWorkout(id int64) error
 }
@@ -46,13 +47,13 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 	defer tx.Rollback()
 
 	query :=
-		`INSERT INTO workouts (title, description, duration_minutes, calories_burned)
-		VALUES ($1, $2, $3, $4)
+		`INSERT INTO workouts (user_id, title, description, duration_minutes, calories_burned)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 
 	`
 
-	err = tx.QueryRow(query, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned).Scan(&workout.ID)
+	err = tx.QueryRow(query, workout.UserID, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned).Scan(&workout.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -127,6 +128,21 @@ func (pg *PostgresWorkoutStore) GetWorkoutByID(id int64) (*Workout, error) {
 	}
 
 	return workout, nil
+}
+
+func (pg *PostgresWorkoutStore) GetWorkoutOwner(workoutID int64) (int, error) {
+	var userID int
+	query := `
+	SELECT user_id
+	FROM workouts
+	WHERE id = $1
+	`
+	err := pg.db.QueryRow(query, workoutID).Scan(&userID)
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }
 
 func (pg *PostgresWorkoutStore) UpdateWorkout(workout *Workout) error {
