@@ -100,6 +100,8 @@ func (wh WorkoutHandler) HandleUpdateWorkoutByID(w http.ResponseWriter, r *http.
 			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "you must be logged into to do this"})
 			return
 		}
+		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "internal service error"})
+		return
 	}
 	if workoutOwner != currentUser.ID {
 		utils.WriteJSON(w, http.StatusForbidden, utils.Envelope{"error": "you are not authorized to update this workout"})
@@ -152,7 +154,6 @@ func (wh WorkoutHandler) HandleDeleteWorkout(w http.ResponseWriter, r *http.Requ
 		utils.WriteJSON(w, http.StatusBadRequest, utils.Envelope{"error": "you must be logged in to do this"})
 		return
 	}
-
 	paramsWorkoutID := chi.URLParam(r, "id")
 	if paramsWorkoutID == "" {
 		http.NotFound(w, r)
@@ -163,6 +164,20 @@ func (wh WorkoutHandler) HandleDeleteWorkout(w http.ResponseWriter, r *http.Requ
 		http.NotFound(w, r)
 		return
 	}
+	workoutOwner, err := wh.workoutStore.GetWorkoutOwner(workoutID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			utils.WriteJSON(w, http.StatusNotFound, utils.Envelope{"error": "you must be logged into to do this"})
+			return
+		}
+		utils.WriteJSON(w, http.StatusInternalServerError, utils.Envelope{"error": "internal service error"})
+		return
+	}
+	if workoutOwner != currentUser.ID {
+		utils.WriteJSON(w, http.StatusForbidden, utils.Envelope{"error": "you are not authorized to delete this workout"})
+		return
+	}
+
 	err = wh.workoutStore.DeleteWorkout(workoutID)
 	if err == sql.ErrNoRows {
 		http.Error(w, "workout not found", http.StatusNotFound)
