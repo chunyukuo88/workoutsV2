@@ -64,8 +64,10 @@ curl -X PUT http://localhost:8080/workouts/1 \
 
 1.8:
 curl -X POST http://localhost:8080/workouts \
+     -H "Authorization: Bearer TNFZNHUBJQNTTT6VA4SDNJPA7ZMSD5T4KO34NPE6WGIJEEBOGCSQ" \
      -H "Content-Type: application/json" \
      -d '{
+           "user_id": 6,
            "title": "Leg Day Workout",
            "description": "A focused workout for building leg strength",
            "duration_minutes": 60,
@@ -91,9 +93,11 @@ curl -X POST http://localhost:8080/workouts \
          }'
 
 
-curl -X GET http://localhost:8080/workouts/2
+curl -X GET http://localhost:8080/workouts/2 \
+      -H "Authorization: Bearer TNFZNHUBJQNTTT6VA4SDNJPA7ZMSD5T4KO34NPE6WGIJEEBOGCSQ"
 
-curl -X PUT http://localhost:8080/workouts/2 \
+curl -X PUT http://localhost:8080/workouts/3 \
+     -H "Authorization: Bearer TNFZNHUBJQNTTT6VA4SDNJPA7ZMSD5T4KO34NPE6WGIJEEBOGCSQ" \
      -H "Content-Type: application/json" \
      -d '{
            "title": "Updated Leg Day Workout",
@@ -120,55 +124,6 @@ curl -X PUT http://localhost:8080/workouts/2 \
            ]
          }'
 
-
-
-3.1:
-curl -X POST http://localhost:8080/users \
-     -H "Content-Type: application/json" \
-     -d '{
-           "username": "john_doe",
-           "email": "john.doe@example.com",
-           "password": "securepassword123",
-           "bio": "Fitness enthusiast and software developer"
-         }'
-
-
-3.2:
-curl -X POST http://localhost:8080/users \
-     -H "Content-Type: application/json" \
-     -d '{
-           "username": "jack_doe",
-           "email": "jack.doe@example.com",
-           "password": "securepassword123",
-           "bio": "Fitness enthusiast and software developer"
-         }'
-
-
-curl -X POST http://localhost:8080/tokens/authentication \
-     -H "Content-Type: application/json" \
-     -d '{
-    "username": "jack_doe",
-    "password": "securepassword123"
-}'
-
-
-
-3.5:
-curl -X POST "http://localhost:8080/users" \
-     -H "Content-Type: application/json" \
-     -d '{
-          "username": "moris",
-          "email": "moris@example.com",
-          "password": "SecureP@ssword123",
-          "bio": "Fitness enthusiast and software developer"
-        }'
-
-curl -X POST "http://localhost:8080/tokens/authentication" \
-     -H "Content-Type: application/json" \
-     -d '{
-          "username": "johndoe",
-          "password": "SecureP@ssword123"
-        }'
 
 curl -X POST "http://localhost:8080/workouts" \
      -H "Authorization: Bearer 3VGSV7LBT4IVASURIKUOUWOF5WGHOWRXUZA6OLKK7U4ABNCLPVSA" \

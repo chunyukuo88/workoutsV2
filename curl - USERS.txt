@@ -1,0 +1,29 @@
+curl -X POST http://localhost:8080/users \
+     -H "Content-Type: application/json" \
+     -d '{
+           "username": "john_doe",
+           "email": "john.doe@example.com",
+           "password": "securepassword123",
+           "bio": "Fitness enthusiast and software developer"
+         }'
+
+
+3.2:
+curl -X POST http://localhost:8080/users \
+     -H "Content-Type: application/json" \
+     -d '{
+           "username": "jack_doe",
+           "email": "jack.doe@example.com",
+           "password": "securepassword123",
+           "bio": "Fitness enthusiast and software developer"
+         }'
+
+3.5:
+curl -X POST "http://localhost:8080/users" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "username": "moris",
+          "email": "moris@example.com",
+          "password": "SecureP@ssword123",
+          "bio": "Fitness enthusiast and software developer"
+        }'

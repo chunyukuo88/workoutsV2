@@ -55,6 +55,7 @@ func (th *TokenHandler) HandleCreateToken(w http.ResponseWriter, r *http.Request
 
 	if !passwordsMatch {
 		utils.WriteJSON(w, http.StatusUnauthorized, utils.Envelope{"error": "invalid credentials"})
+		return
 	}
 
 	token, err := th.tokenStore.CreateNewToken(user.ID, 24*time.Hour, tokens.ScopeAuth)
